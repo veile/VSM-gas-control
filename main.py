@@ -20,7 +20,8 @@ AR_ADDR = 253
 YH2 = deque([MFC().read_flow(H2_ADDR)], maxlen=100)
 YAr = deque([MFC().read_flow(AR_ADDR)], maxlen=100)
 
-T = deque(datetime.now(tz=None).strftime("%Y-%m-%d %H:%M:%S"), maxlen=100)
+#T = deque(datetime.now(tz=None).strftime("%Y-%m-%d %H:%M:%S"), maxlen=100)
+T = deque([1], maxlen=100)
 
 # Main Page layout
 index_page = html.Div(
@@ -46,20 +47,20 @@ def update_flow_graph(n):
     YAr.append(MFC().read_flow(AR_ADDR))
     YH2.append(MFC().read_flow(H2_ADDR))
 
-    T.append(datetime.now(tz=None).strftime("%H:%M"))
-
+    #T.append(datetime.now(tz=None).strftime("%H:%M"))
+    T.append(n)
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add traces
     fig.add_trace(
-        go.Scatter(x=T, y=YAr, name="Argon flow"),
+        go.Scatter(x=list(T), y=list(YAr), name="Argon flow"),
         secondary_y=False,
     )
 
     fig.add_trace(
-        go.Scatter(x=T, y=YH2, name="Hydrogen flow"),
+        go.Scatter(x=list(T), y=list(YH2), name="Hydrogen flow"),
         secondary_y=True,
     )
 
