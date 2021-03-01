@@ -1,10 +1,10 @@
 from collections import deque
-from datetime import datetime
+import datetime
 
 from dash.dependencies import Output, Input
 
 from app import app, colors
-from app.mks import MFC
+from app.mks import MFC, dummy_MFC
 
 import dash_html_components as html
 import app.components as comp
@@ -17,11 +17,13 @@ from plotly.subplots import make_subplots
 H2_ADDR = 252
 AR_ADDR = 253
 
-YH2 = deque([MFC().read_flow(H2_ADDR)], maxlen=100)
-YAr = deque([MFC().read_flow(AR_ADDR)], maxlen=100)
+mfc = dummy_MFC()
 
-#T = deque(datetime.now(tz=None).strftime("%Y-%m-%d %H:%M:%S"), maxlen=100)
-T = deque([1], maxlen=100)
+YH2 = deque([mfc.read_flow(H2_ADDR)], maxlen=100)
+YAr = deque([mfc.read_flow(AR_ADDR)], maxlen=100)
+
+T = deque([datetime.datetime.now(tz=None)], maxlen=100)
+# T = deque([0], maxlen=100)
 
 # Main Page layout
 index_page = html.Div(
@@ -44,11 +46,11 @@ app.layout = index_page
     Input('flow_interval', 'n_intervals')
 )
 def update_flow_graph(n):
-    YAr.append(MFC().read_flow(AR_ADDR))
-    YH2.append(MFC().read_flow(H2_ADDR))
+    YAr.append(mfc.read_flow(AR_ADDR))
+    YH2.append(mfc.read_flow(H2_ADDR))
 
     #T.append(datetime.now(tz=None).strftime("%H:%M"))
-    T.append(n)
+    T.append(datetime.datetime.now())
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
@@ -79,6 +81,7 @@ def update_flow_graph(n):
     fig.update_yaxes(
         title_text="Hydrogen flow",
         secondary_y=True)
+    fig.update_layout(xaxis_range=[min(T), max(T)])
 
     return fig
 
@@ -91,12 +94,12 @@ def update_flow_graph(n):
 )
 def set_flow_ar(nc, ne, f):
     if nc is None and ne is None:
-        sx = MFC().comm('SX?', AR_ADDR)
+        sx = mfc.comm('SX?', AR_ADDR)
         return "Current setpoint: %s" %sx
 
-    MFC().set_flow(f, AR_ADDR)
+    mfc.set_flow(f, AR_ADDR)
 
-    sx = MFC().comm('SX?', AR_ADDR)
+    sx = mfc.comm('SX?', AR_ADDR)
     return "Current setpoint: %s" %sx
 
 @app.callback(
@@ -107,14 +110,14 @@ def set_flow_ar(nc, ne, f):
 )
 def set_flow_h2(nc, ne, f):
     if nc is None and ne is None:
-        sx = MFC().comm('SX?', H2_ADDR)
+        sx = mfc.comm('SX?', H2_ADDR)
         return "Current setpoint: %s" %sx
 
-    MFC().set_flow(f, H2_ADDR)
+    mfc.set_flow(f, H2_ADDR)
 
-    sx = MFC().comm('SX?', H2_ADDR)
+    sx = mfc.comm('SX?', H2_ADDR)
     return "Current setpoint: %s" %sx
 
 
 if __name__ == '__main__':
-        app.run_server(debug=True, host='0.0.0.0')
+    app.run_server(debug=True, host='0.0.0.0')
