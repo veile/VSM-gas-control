@@ -84,7 +84,7 @@ class MFC():
         flow = round(flow, 2)
 
         if 0 <= flow <= upper_limit:
-            self.comm('SX!%f' %flow)
+            self.comm('SX!%f' %flow, addr)
 
         else:
             self.log("Flow of %f is out of range" %flow, error=True)
