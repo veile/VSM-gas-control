@@ -54,13 +54,15 @@ def h2_div():
         children=
         [
             html.Label("Hydrogen flow"),
+            html.Br(),
             dcc.Input(
                 id='h2_set_flow',
                 persistence=False,
                 type = 'number'
             ),
             html.Br(),
-            html.Button("Submit", id='h2_set_flow_submit')
+            html.Button("Submit", id='h2_set_flow_submit'),
+            html.Div(id='h2_submit_text')
         ],
         id='h2_div'
     )
