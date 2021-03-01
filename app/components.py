@@ -26,13 +26,15 @@ def ar_div():
         children=
         [
             html.Label("Argon flow"),
+            html.Br(),
             dcc.Input(
                 id='ar_set_flow',
                 persistence=False,
                 type = 'number'
             ),
             html.Br(),
-            html.Button("Submit", id='ar_set_flow_submit')
+            html.Button("Submit", id='ar_set_flow_submit'),
+            html.Div(id='ar_submit_text')
         ],
         id='ar_div'
     )

@@ -26,17 +26,14 @@ index_page = html.Div(
 app.layout = index_page
 
 Y = [MFC().read_flow(253)]
- 
+# Y = [1]
+
 # Callbacks
 @app.callback(
     Output('flow_graph', 'figure'),
     Input('flow_interval', 'n_intervals')
 )
 def update_flow_graph(n):
-    if n == 0:
-      pass
-      
-
     Y.append(MFC().read_flow(253))
     
     X = [i for i in range(len(Y))]
@@ -50,6 +47,23 @@ def update_flow_graph(n):
 
     return {'data': [data],
             'layout': go.Layout(xaxis=dict(range=[min(X), max(X)]), yaxis=dict(range=[min(Y), max(Y)]), )}
+
+
+@app.callback(
+    Output('ar_submit_text', 'children'),
+    [Input('ar_set_flow_submit', 'n_clicks'),
+     Input('ar_set_flow', 'n_submit'),
+     Input('ar_set_flow', 'value')]
+)
+def set_flow_ar(nc, ne, f):
+    if nc is None and ne is None:
+        return ""
+
+    MFC().set_flow(f, 253)
+
+    sx = MFC().comm('SX?', 253)
+    return "Set Point set to %s" %sx
+    # return "Set Point set to %.2f" %f
 
 
 if __name__ == '__main__':
