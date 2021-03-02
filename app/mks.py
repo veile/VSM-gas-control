@@ -91,10 +91,13 @@ class MFC():
 
     def read_flow(self, addr):
         flow = self.comm('FX?', addr)
-        return float(flow)
+        try:
+            return float(flow)
+        except:
+            return -1
 
 
-import numpy as np
+import random
 class dummy_MFC():
     def __init__(self):
         self.ser = 'Dummy Serial'
@@ -144,6 +147,6 @@ class dummy_MFC():
 
 
     def read_flow(self, addr):
-        return np.random.rand()*10
+        return random.randint(0, 10)
 
 

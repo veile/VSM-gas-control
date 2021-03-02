@@ -1,10 +1,10 @@
 from collections import deque
 import datetime
 
-from dash.dependencies import Output, Input
+from dash.dependencies import Output, Input, State
 
 from app import app, colors
-from app.mks import MFC, dummy_MFC
+from app.mks import MFC
 
 import dash_html_components as html
 import app.components as comp
@@ -17,13 +17,17 @@ from plotly.subplots import make_subplots
 H2_ADDR = 252
 AR_ADDR = 253
 
-mfc = dummy_MFC()
+mfc = MFC()
+#mfc = dummy_MFC()
 
+import time
+
+time.sleep(.2)
 YH2 = deque([mfc.read_flow(H2_ADDR)], maxlen=100)
+time.sleep(.2)
 YAr = deque([mfc.read_flow(AR_ADDR)], maxlen=100)
 
 T = deque([datetime.datetime.now(tz=None)], maxlen=100)
-# T = deque([0], maxlen=100)
 
 # Main Page layout
 index_page = html.Div(
@@ -89,8 +93,8 @@ def update_flow_graph(n):
 @app.callback(
     Output('ar_submit_text', 'children'),
     [Input('ar_set_flow_submit', 'n_clicks'),
-     Input('ar_set_flow', 'n_submit'),
-     Input('ar_set_flow', 'value')]
+     Input('ar_set_flow', 'n_submit')],
+     State('ar_set_flow', 'value')
 )
 def set_flow_ar(nc, ne, f):
     if nc is None and ne is None:
@@ -105,8 +109,8 @@ def set_flow_ar(nc, ne, f):
 @app.callback(
     Output('h2_submit_text', 'children'),
     [Input('h2_set_flow_submit', 'n_clicks'),
-     Input('h2_set_flow', 'n_submit'),
-     Input('h2_set_flow', 'value')]
+     Input('h2_set_flow', 'n_submit')],
+     State('h2_set_flow', 'value')
 )
 def set_flow_h2(nc, ne, f):
     if nc is None and ne is None:
